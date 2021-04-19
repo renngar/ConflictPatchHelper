@@ -1,0 +1,50 @@
+#+TITLE:  Conflict Patch Helper
+Helps create Conflict Resolution Patches for Skyrim and other Bethesda games
+using [[https://github.com/TES5Edit/TES5Edit][xEdit]].
+
+It will let you select the plugins you want to patch. Then it goes through the
+conflicts and asks you which plugin you want to use for each type of subrecord
+and the name of the patch to generate. Then it will create a patch adding all
+the plugins as masters and flagging the patch as an [[https://tes5edit.github.io/docs/8-managing-mod-files.html#TheESLFlag][ESL]].
+
+I wrote this because I got tired of manually copying individual subrecords from
+one mod or another into my patches. For example say you want to take the
+lighting-related subrecords from [[https://www.nexusmods.com/skyrimspecialedition/mods/2424][Enhanced Lights and FX]] (ELFX) or the ELFX
+Enhancer, the weather records from [[https://www.nexusmods.com/skyrimspecialedition/mods/12125][Obsidian Weathers and Seasons]] and the water
+records from [[https://www.nexusmods.com/skyrimspecialedition/mods/2182][Realistic Water Two SE]], this script will help you do that.
+
+It is not meant for resolving NavMesh issues or Leveled Lists. At least not at
+this time. I have some ideas for Leveled Lists, but this was useful enough for
+basic patching that I decided to release it in its current form.
+
+* Requirements
+
+Mator The Eternal's [[https://github.com/matortheeternal/TES5EditScripts/blob/master/Edit%20Scripts/mteFunctions.pas][mteFunctions.pas]] is required as is running xEdit in [[https://tes5edit.github.io/docs/5-conflict-detection-and-resolution.html#VeryQuickShowConflicts][Very
+Quick Show Conflicts]] mode.
+
+* Installation
+
+Place ~Conflict Patch Helper.pas~ and ~mteFunctions.pas~ in your xEdit ~Edit
+Scripts~ directory.
+
+* Usage
+
+Launch *Very Quick Show Conflicts*.
+
+Review the conflicts between the mods you want to patch to get an idea which
+subrecords you want from each.
+
+Right-click in the left-hand pane of xEdit, select *Apply Script...*, pick
+*Conflict Patch Helper* from the drop-down list, and hit *OK*. Alternatively,
+hit Ctrl+Shift+P to launch the script. If you don't like the hotkey, edit or
+remove it near the top of the script.
+
+Once it is done, review the results. You may find things that need manually
+changed or you may discover that you would have been better off using a
+different plugin for a specific subrecord type. Fortunately, the script reports
+which plugins you chose for which subrecords. This provides a good reference for
+additional runs.
+
+* Credits
+
+[[https://www.nexusmods.com/skyrimspecialedition/users/167469][ElminsterAU]] or [[https://www.nexusmods.com/skyrimspecialedition/mods/164][SSEEdit]] and [[https://www.nexusmods.com/skyrim/users/3900618][matortheeternal]] for ~mteFunctions.pas~.
