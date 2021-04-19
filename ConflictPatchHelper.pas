@@ -132,15 +132,6 @@ begin
   end;
 end;
 
-function IsSubrecord(e: IInterface): boolean;
-begin
-  Result :=
-    (ElementType(e) = etSubRecord) or
-    (ElementType(e) = etSubRecordStruct) or
-    (ElementType(e) = etSubRecordArray) or
-    (ElementType(e) = etSubRecordUnion);
-end;
-
 procedure InfoDlg(msg: string);
 begin
   MessageDlg(msg, mtInformation, [mbOk], 0);
@@ -211,36 +202,13 @@ begin
     Result := nil;
 end;
 
-function Initialize: integer;
-begin
-  gslPatchPlugins := TStringList.Create;
-  gslSubrecordMappings := TStringList.Create;
-
-  if not FilterApplied then begin
-    InfoDlg('You need to "Apply filter to show Conflicts" for this script to work properly');
-    Result := 1;
-    exit;
-  end;
-
-  // Creates glFiles and gslFileNames
-  BuildFileLists;
-
-  SelectPlugins('Select the Plugins to Patch', gslFileNames, gslPatchPlugins);
-  if gslPatchPlugins.Count < 2 then
-  begin
-    InfoDlg('You need to select at least two plugins to generate a patch between');
-    Result := 1;
-    exit;
-  end;
-end;
-
-function Process(r: IInterface): integer;
+function PatchRecord(r: IInterface): integer;
 var
   fid: cardinal;
   i: integer;
   f: IwbFile;
-  path, t: string;
-  e, r1, r2: IInterface;
+  path, plugin, values: string;
+  e, baseRecord, patchRecord, definingRecord, subrecord: IInterface;
 begin
   if ElementType(r) <> etMainRecord then
   begin
@@ -251,37 +219,89 @@ begin
   if ConflictAllForNode(r) < caOverride then
     exit;
 
+  fid := GetLoadOrderFormID(r);
+
   // Skip records that have already been processed.
   if Assigned(gfPatch) then
-  begin
-    fid := GetLoadOrderFormID(r);
     if Assigned(RecordInFile(gfPatch, fid)) then
       exit;
-  end;
 
-  // Copy the record to the patch
-  r1 := AddToPatch(r, false);
-
+  // Loop through the record's subrecords
   for i := 0 to Pred(ElementCount(r)) do
   begin
     e := ElementByIndex(r, i);
     path := ElementPath(e);
 
-    // The record header and ownership are not editable
+    // Skip the record header and ownership. They are not editable.
     if (path = 'Record Header') or (path = 'Ownership') then
       continue;
 
+    // Lookup or prompt for which plugin should define this type of subrecord
     if gslSubrecordMappings.IndexOfName(path) = -1 then
     begin
-      t := SelectPluginForElementType(r, path);
-      FormatMessage('Using %s for %s', [t, path]);
-      gslSubrecordMappings.Values[path] := t;
+      plugin := SelectPluginForElementType(r, path);
+      gslSubrecordMappings.Values[path] := plugin;
+      FormatMessage('Using %s for %s %s', [plugin, ElementTypeString(e), path]);
     end;
+
+    // Skip subrecords from the first plugin.  They are not overrides
+    if gslSubrecordMappings.IndexOfName(path) = 0 then
+      continue;
+
+    // If the defining plugin contains a subrecord, then copy it to the patch
     f := NameToFile(gslSubrecordMappings.Values[path]);
-    r2 := RecordInFile(f, fid);
-    if Assigned(ElementByPath(r2, path)) then
-      seev(r1, path, geev(r2, path));
+    definingRecord := RecordInFile(f, fid);
+    subrecord := ElementByPath(definingRecord, path);
+    if Assigned(subrecord) then
+    begin
+      // Making sure that the base plugin's record has first been copied into the patch
+      if not Assigned(patchRecord) then
+        patchRecord := AddToPatch(RecordInFile(NameToFile(gslPatchPlugins[0]), fid), false);
+
+      // then override that with the defining plugin's subrecord
+      wbCopyElementToRecord(subrecord, patchRecord, false, true);
+    end;
   end;
+end;
+
+procedure GeneratePatch;
+var
+  i, j: integer;
+  f: IwbFile;
+begin
+  // Loop through all the records in all but the first selected plugin
+  // and patch them.  Skip the first one, it cannot override itself.
+  for i := 1 to Pred(gslPatchPlugins.Count) do
+  begin
+    f := NameToFile(gslPatchPlugins[i]);
+    for j := 0 to Pred(RecordCount(f)) do
+      PatchRecord(RecordByIndex(f, j));
+  end;
+end;
+
+function Initialize: integer;
+begin
+  gslPatchPlugins := TStringList.Create;
+  gslSubrecordMappings := TStringList.Create;
+
+  if not FilterApplied then begin
+    InfoDlg('You need to "Apply filter to show Conflicts" for this script to work properly');
+    Result := 1;
+    exit
+  end;
+
+  // Creates glFiles and gslFileNames
+  BuildFileLists;
+
+  SelectPlugins('Select the Plugins to Patch', gslFileNames, gslPatchPlugins);
+  if gslPatchPlugins.Count < 2 then
+  begin
+    InfoDlg('You need to select at least two plugins to generate a patch between');
+    Result := 1;
+    exit
+  end;
+
+  GeneratePatch;
 end;
 
 function Finalize: integer;
