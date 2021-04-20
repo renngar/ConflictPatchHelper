@@ -2,9 +2,9 @@ program ConflictPatchHelperApp;
 
 uses
   Vcl.Forms,
-  xEditAPI in 'xEditAPI.pas',
-  mteFunctions in 'mteFunctions.pas',
-  ConflictPatchHelper in 'ConflictPatchHelper.pas';
+  xEditAPI in 'Edit Scripts\xEditAPI.pas',
+  mteFunctions in 'Edit Scripts\mteFunctions.pas',
+  ConflictPatchHelper in 'Edit Scripts\Conflict Patch Helper.pas';
 
 {$R *.res}
 
