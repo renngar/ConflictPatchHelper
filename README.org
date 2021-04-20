@@ -45,6 +45,12 @@ different plugin for a specific subrecord type. Fortunately, the script reports
 which plugins you chose for which subrecords. This provides a good reference for
 additional runs.
 
+* Licenses
+
+Conflict Patch Helper is licensed under the [[./COPYING][GNU GPL Version 3]] except for
+~xEditAPI.pas~ which is covered under the [[./Licenses/MPL.txt][MPL Version 2.0]] and ~mteFunctions.pas~
+which is available under the [[./Licenses/GPLv2.txt][GNU GPL Version 2]].
+
 * Credits
 
 [[https://www.nexusmods.com/skyrimspecialedition/users/167469][ElminsterAU]] or [[https://www.nexusmods.com/skyrimspecialedition/mods/164][SSEEdit]] and [[https://www.nexusmods.com/skyrim/users/3900618][matortheeternal]] for ~mteFunctions.pas~.
