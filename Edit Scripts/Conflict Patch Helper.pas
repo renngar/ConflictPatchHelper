@@ -101,31 +101,6 @@ begin
   end;
 end;
 
-function SelectPluginForElementType(var r: IwbMainRecord; elementType: string): string;
-var
-  i, ovc: integer;
-  f: IwbFile;
-  slCurrentPlugins: TStringList;
-  m, ovr: IInterface;
-begin
-  slCurrentPlugins := TStringList.Create;
-
-  // Build a list of files in slCurrentPlugins that contain this record
-  try
-    m := MasterOrSelf(r);
-    AddOnlyPluginFilesToList(m, slCurrentPlugins);
-    ovc := OverrideCount(m);
-    for i := 0 to Pred(ovc) do begin
-      ovr := OverrideByIndex(m, i);
-      AddOnlyPluginFilesToList(ovr, slCurrentPlugins);
-    end;
-
-    Result := SelectPlugin(Format('Plugin for "%s"', [elementType]), slCurrentPlugins);
-  finally
-    slCurrentPlugins.Free;
-  end;
-end;
-
 procedure InfoDlg(msg: string);
 begin
   MessageDlg(msg, mtInformation, [mbOk], 0);
@@ -233,7 +208,7 @@ begin
     // Lookup or prompt for which plugin should define this type of subrecord
     if gslSubrecordMappings.IndexOfName(path) = -1 then
     begin
-      plugin := SelectPluginForElementType(r, path);
+      plugin := SelectPlugin(Format('Plugin for "%s"', [path]), gslFiles);
       gslSubrecordMappings.Values[path] := plugin;
       FormatMessage('Using %s for %s %s', [plugin, ElementTypeString(e), path]);
     end;
