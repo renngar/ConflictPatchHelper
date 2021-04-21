@@ -171,6 +171,15 @@ begin
     Result := nil;
 end;
 
+{ Is the element a subrecord? }
+function IsSubrecord(e: IInterface): boolean;
+begin
+  Result := (ElementType(e) = etSubRecord) or
+            (ElementType(e) = etSubRecordStruct) or
+            (ElementType(e) = etSubRecordArray) or
+            (ElementType(e) = etSubRecordUnion);
+end;
+
 function PatchRecord(r: IInterface): integer;
 var
   fid: cardinal;
@@ -200,6 +209,10 @@ begin
   begin
     e := ElementByIndex(r, i);
     path := ElementPath(e);
+
+    // Only handle subrecord conflicts, not things like Cells
+    if not IsSubrecord(e) then
+      continue;
 
     // Skip the record header and ownership. They are not editable.
     if (path = 'Record Header') or (path = 'Ownership') then
