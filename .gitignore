@@ -1,9 +1,13 @@
 *.7z
 *.pas.backup.*
+GPATH
+GRTAGS
+GTAGS
 README.html
 
-# Created by https://www.toptal.com/developers/gitignore/api/delphi
-# Edit at https://www.toptal.com/developers/gitignore?templates=delphi
+
+# Created by https://www.toptal.com/developers/gitignore/api/delphi,vscode
+# Edit at https://www.toptal.com/developers/gitignore?templates=delphi,vscode
 
 ### Delphi ###
 # Uncomment these types if you want even more clean repository. But be careful.
@@ -70,4 +74,12 @@ __recovery/
 # Boss dependency manager vendor folder https://github.com/HashLoad/boss
 modules/
 
-# End of https://www.toptal.com/developers/gitignore/api/delphi
+### vscode ###
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# End of https://www.toptal.com/developers/gitignore/api/delphi,vscode
