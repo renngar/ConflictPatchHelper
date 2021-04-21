@@ -17,19 +17,20 @@ It is not meant for resolving NavMesh issues or Leveled Lists. At least not at
 this time. I have some ideas for Leveled Lists, but this was useful enough for
 basic patching that I decided to release it in its current form.
 
-* Requirements
+* Installation from Nexus
 
-Mator The Eternal's [[https://github.com/matortheeternal/TES5EditScripts/blob/master/Edit%20Scripts/mteFunctions.pas][mteFunctions.pas]] is required as is running xEdit in [[https://tes5edit.github.io/docs/5-conflict-detection-and-resolution.html#VeryQuickShowConflicts][Very
-Quick Show Conflicts]] mode.
-
-* Installation
-
-Place ~Conflict Patch Helper.pas~ and ~mteFunctions.pas~ in your xEdit ~Edit
+Copy the contents of ~Edit Scripts~ from the archive into your xEdit ~Edit
 Scripts~ directory.
+
+* Installation from GitHub
+
+Conflict Patch Helper is being developed on [[https://github.com][GitHub]] There are separate
+installation instructions in the [[https://github.com/renngar/ConflictPatchHelper/tree/master/Edit%20Scripts][Edit Scripts]] directory of the [[https://github.com/renngar/ConflictPatchHelper][GitHub repo]].
 
 * Usage
 
-Launch *Very Quick Show Conflicts*.
+Launch xEdit in [[https://tes5edit.github.io/docs/5-conflict-detection-and-resolution.html#VeryQuickShowConflicts][Very Quick Show Conflicts]] mode or right-click in the left pane
+and select *Apply Filter to show Conflicts*.
 
 Review the conflicts between the mods you want to patch to get an idea which
 subrecords you want from each.
@@ -54,3 +55,13 @@ which is available under the [[./Licenses/GPLv2.txt][GNU GPL Version 2]].
 * Credits
 
 [[https://www.nexusmods.com/skyrimspecialedition/users/167469][ElminsterAU]] or [[https://www.nexusmods.com/skyrimspecialedition/mods/164][SSEEdit]] and [[https://www.nexusmods.com/skyrim/users/3900618][matortheeternal]] for ~mteFunctions.pas~.
+
+* Known Issues
+
+- Cannot select which plugin to copy the Record Header or the Ownership
+  subrecord from. The record header always comes from the first selected plugin.
+
+** Fixed in version 1.0.1
+- May prompt for things that are not subrecords, like Cell. This is harmless.
+- May prompt with only a single plugin in the list for subrecords that exist in
+  only one plugin when they are first encountered.

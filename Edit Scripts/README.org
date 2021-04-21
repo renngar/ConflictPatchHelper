@@ -1,0 +1,6 @@
+#+TITLE: Installation from GitHub
+
+Copy ~Conflict Patch Helper.pas~ into your xEdit ~Edit Scripts~ directory. If
+you do not have a current copy of ~mteFunctions.pas~, copy it too. You do not
+need ~xEditAPI.pas~. It is shipped with xEdit and is included here only as a
+convenience for myself while working on the script.
