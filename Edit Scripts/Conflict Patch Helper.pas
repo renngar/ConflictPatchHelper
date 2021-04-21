@@ -1,7 +1,7 @@
 {
   Generate a Conflict Resolution Patch
   Hotkey: Ctrl+Shift+P
-  Version 1.0 by Renngar
+  Version 1.0.1 by Renngar
 }
 unit ConflictPatchHelper;
 
