@@ -14,27 +14,18 @@ uses xEditAPI, Classes, SysUtils, StrUtils, CheckLst, Dialogs, Forms, Windows, m
 var
   sCurrentPlugin: string;
   gfPatch: IwbFile;
-  glFiles: TList;
-  gslFileNames, gslPatchPlugins, gslSubrecordMappings: TStringList;
+  gslFiles: TStringList;
+  gslSubrecordMappings: TStringList;
 
 procedure FormatMessage(s: string; args: IInterface);
 begin
   AddMessage(Format(s, args));
 end;
 
-procedure BuildFileLists();
-var
-  i: integer;
-  f: IwbFile;
+{ Look up a file based upon its index in gslFiles }
+function IndexToFile(i: integer): IwbFile;
 begin
-  glFiles := TList.Create;
-  gslFileNames := TStringList.Create;
-  for i := 0 to Pred(FileCount) do
-  begin
-    f := FileByIndex(i);
-    glFiles.Add(TObject(f));
-    gslFileNames.Add(Name(f));
-  end;
+    Result := ObjectToElement(gslFiles.Objects[i]);
 end;
 
 { Look up a file based upon its name. }
@@ -42,19 +33,17 @@ function NameToFile(s: string): IwbFile;
 var
   i: integer;
 begin
-  i := gslFileNames.IndexOf(s);
+  i := gslFiles.IndexOf(s);
   if i >= 0 then
-    Result := ObjectToElement(glFiles[i]);
+    Result := IndexToFile(i);
 end;
 
 procedure AddOnlyPluginFilesToList(var r: IwbMainRecord; lst: TStringList);
 var
-  i: integer;
   s: string;
 begin
   s := Name(GetFile(r));
-  i := gslPatchPlugins.IndexOf(s);
-  if i >= 0 then
+  if gslFiles.IndexOf(s) >= 0 then
     lst.Add(s);
 end;
 
@@ -85,25 +74,29 @@ begin
 end;
 
 // Select multiple plugins
-procedure SelectPlugins(var prompt: string; lst: TStringList; slSelected: TStringList);
+procedure SelectPlugins(var prompt: string);
 var
   frm: TForm;
   clb: TCheckListBox;
   i: integer;
+  files: TStringList;
 begin
+  files := TStringList.Create;
   frm := frmFileSelect;
   try
+    for i := 0 to Pred(FileCount) do
+      files.Add(Name(FileByIndex(i)));
+
     frm.Caption := prompt;
     clb := TCheckListBox(frm.FindComponent('CheckListBox1'));
-    clb.items.Assign(lst);
+    clb.items.Assign(files);
     if frm.ShowModal <> mrOk then
       exit;
     for i := 0 to Pred(clb.items.Count) do
       if clb.Checked[i] then
-      begin
-        slSelected.Add(lst[i]);
-      end;
+        gslFiles.AddObject(files[i], TObject(FileByIndex(i)));
   finally
+    files.Free;
     frm.Free;
   end;
 end;
@@ -164,8 +157,8 @@ begin
     if not Assigned(gfPatch) then
       abort;
 
-    for i := 0 to Pred(gslPatchPlugins.Count) do
-      AddMasterIfMissing(gfPatch, GetFileName(NameToFile(gslPatchPlugins[i])));
+    for i := 0 to Pred(gslFiles.Count) do
+      AddMasterIfMissing(gfPatch, GetFileName(IndexToFile(i)));
 
     // Patch will be an ESL
     SetFlag(ElementByPath(ElementByIndex(gfPatch, 0), 'Record Header\Record Flags'), 9, true);
@@ -246,7 +239,7 @@ begin
     end;
 
     // Skip subrecords from the first plugin.  They are not overrides
-    if gslSubrecordMappings.IndexOfName(path) = 0 then
+    if gslFiles.IndexOfName(path) = 0 then
       continue;
 
     // If the defining plugin contains a subrecord, then copy it to the patch
@@ -257,7 +250,7 @@ begin
     begin
       // Making sure that the base plugin's record has first been copied into the patch
       if not Assigned(patchRecord) then
-        patchRecord := AddToPatch(RecordInFile(NameToFile(gslPatchPlugins[0]), fid), false);
+        patchRecord := AddToPatch(RecordInFile(IndexToFile(0), fid), false);
 
       // then override that with the defining plugin's subrecord
       wbCopyElementToRecord(subrecord, patchRecord, false, true);
@@ -272,17 +265,19 @@ var
 begin
   // Loop through all the records in all but the first selected plugin
   // and patch them.  Skip the first one, it cannot override itself.
-  for i := 1 to Pred(gslPatchPlugins.Count) do
+  for i := 1 to Pred(gslFiles.Count) do
   begin
-    f := NameToFile(gslPatchPlugins[i]);
+    f := IndexToFile(i);
     for j := 0 to Pred(RecordCount(f)) do
       PatchRecord(RecordByIndex(f, j));
   end;
 end;
 
 function Initialize: integer;
+var
+  i: integer;
 begin
-  gslPatchPlugins := TStringList.Create;
+  gslFiles := TStringList.Create;
   gslSubrecordMappings := TStringList.Create;
 
   if not FilterApplied then begin
@@ -291,11 +286,8 @@ begin
     exit
   end;
 
-  // Creates glFiles and gslFileNames
-  BuildFileLists;
-
-  SelectPlugins('Select the Plugins to Patch', gslFileNames, gslPatchPlugins);
-  if gslPatchPlugins.Count < 2 then
+  SelectPlugins('Select the Plugins to Patch');
+  if gslFiles.Count < 2 then
   begin
     InfoDlg('You need to select at least two plugins to generate a patch between');
     Result := 1;
@@ -307,11 +299,10 @@ end;
 
 function Finalize: integer;
 begin
-  SortMasters(gfPatch);
+  if Assigned(gfPatch) then
+    SortMasters(gfPatch);
 
-  glFiles.Free;
-  gslFileNames.Free;
-  gslPatchPlugins.Free;
+  gslFiles.Free;
   gslSubrecordMappings.Free;
 end;
 
