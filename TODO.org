@@ -1,7 +1,4 @@
-#+TITLE: Todo
-* TODO Why does it only show one plugin for some record types?
-
-This is seen patching Embers XD and Skyrim Farmhouse Inns.
+#+TITLE: To Dos
 
 * TODO Implement Structure Copying
 
@@ -11,44 +8,3 @@ select which plugin the record should be copied from initially.
 Simply commenting out the 'Record Header' and 'Ownership' check was not
 sufficient. The current version doesn't throw any errors, but it did not work,
 probably because they are structures.
-
-* TODO Check what to do with Cell
-
-It showed up patching Embers XD against Skyrim Farmhouse Inns and is an ~etValue~.
-
-Here are all the types from merging those two.
-
-#+begin_src
-[00:00] Start: Applying script "Conflict Patch Helper\Conflict Patch Helper"
-Using [0D] skryrimfarmhouseinns.esp for etStruct Record Header
-Using [FE 01A] Embers XD [ESL].esp for etSubRecord EDID - Editor ID
-[Rg - 1.esp] Adding master "Embers XD [ESL].esp"
-[Rg - 1.esp] Adding master "skryrimfarmhouseinns.esp"
-[Rg - 1.esp] Adding master "Skyrim.esm"
-Using [FE 01A] Embers XD [ESL].esp for etSubRecord FULL - Name
-Using [FE 01A] Embers XD [ESL].esp for etSubRecord DATA - Flags
-Using [FE 01A] Embers XD [ESL].esp for etSubRecord XCLL - Lighting
-Using [FE 01A] Embers XD [ESL].esp for etSubRecord LTMP - Lighting Template
-Using [FE 01A] Embers XD [ESL].esp for etSubRecord XCLW - Water Height
-Using [FE 01A] Embers XD [ESL].esp for etSubRecord XLCN - Location
-Using [FE 01A] Embers XD [ESL].esp for etSubRecordStruct Ownership
-Using [FE 01A] Embers XD [ESL].esp for etSubRecord XCCM - Sky/Weather from Region
-Using [FE 01A] Embers XD [ESL].esp for etSubRecord XCAS - Acoustic Space
-Using [FE 01A] Embers XD [ESL].esp for etSubRecord XCMO - Music Type
-Using [FE 01A] Embers XD [ESL].esp for etSubRecord XCIM - Image Space
-Using [0D] skryrimfarmhouseinns.esp for etValue Cell
-Using [0D] skryrimfarmhouseinns.esp for etSubRecord NAME - Base
-Using [0D] skryrimfarmhouseinns.esp for etSubRecord XTEL - Teleport Destination
-Using [0D] skryrimfarmhouseinns.esp for etSubRecord XNDP - Navigation Door Link
-Using [0D] skryrimfarmhouseinns.esp for etSubRecord XLRL - Location Reference
-Using [0D] skryrimfarmhouseinns.esp for etSubRecord DATA - Position/Rotation
-Using [0D] skryrimfarmhouseinns.esp for etSubRecord XSCL - Scale
-Using [FE 01A] Embers XD [ESL].esp for etSubRecord XILL - Lock List
-Using [0D] skryrimfarmhouseinns.esp for etSubRecord XESP - Enable Parent
-Using [0D] skryrimfarmhouseinns.esp for etSubRecord XEMI - Emittance
-Using [0D] skryrimfarmhouseinns.esp for etSubRecord XRDS - Radius
-Using [0D] skryrimfarmhouseinns.esp for etSubRecord XLIG - Light Data
-Using [0D] skryrimfarmhouseinns.esp for etSubRecord NVNM - Geometry
-Using [0D] skryrimfarmhouseinns.esp for etSubRecord XLRT - Location Ref Type
-[00:29] Done: Applying script "Conflict Patch Helper\Conflict Patch Helper", Elapsed Time: 00:29
-#+end_src
